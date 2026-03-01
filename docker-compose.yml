@@ -1,0 +1,11 @@
+services:
+  policy_engine:
+    build: .
+    restart: unless-stopped
+    environment:
+      - POLICY_FILE_PATH=/data/policy.rego
+      - DATA_FILE_PATH=/data/data.json
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data:/data
