@@ -12,7 +12,7 @@ RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o policy_engine .
 # APP Image
 ########################################################################
 
-FROM debian:bookworm-slim AS app
+FROM scratch AS app
 
 COPY --from=builder /src/policy_engine /
 
