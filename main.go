@@ -33,7 +33,7 @@ func (pe *PolicyEngine) load() error {
 	pe.mu.Lock()
 	defer pe.mu.Unlock()
 
-	fmt.Println("loading policy and data...")
+	log.Println("loading policy and data...")
 
 	policyCode, err := os.ReadFile(pe.PolicyFilePath)
 	if err != nil {
@@ -63,7 +63,7 @@ func (pe *PolicyEngine) load() error {
 	}
 
 	pe.query = q
-	fmt.Println("policy loaded successfully.")
+	log.Println("policy loaded successfully.")
 	return nil
 }
 
@@ -86,7 +86,7 @@ func (pe *PolicyEngine) checkAuth(w http.ResponseWriter, r *http.Request) {
 	pe.mu.RUnlock()
 
 	if err != nil {
-		fmt.Printf("Error evaluating policy: %v", err)
+		log.Println("Error evaluating policy: ", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -94,12 +94,12 @@ func (pe *PolicyEngine) checkAuth(w http.ResponseWriter, r *http.Request) {
 	if len(results) > 0 {
 		allowed, ok := results[0].Expressions[0].Value.(bool)
 		if ok && allowed {
-			fmt.Printf("access granted, agent: %s, resource: %s", agent, resource)
+			log.Printf("access granted, agent: %s, resource: %s", agent, resource)
 			w.WriteHeader(http.StatusOK)
 			return
 		}
 	}
-	fmt.Printf("access denied, agent: %s, resource: %s", agent, resource)
+	log.Printf("access denied, agent: %s, resource: %s", agent, resource)
 	http.Error(w, "Forbidden", http.StatusForbidden)
 }
 
@@ -115,6 +115,6 @@ func main() {
 	}
 
 	http.HandleFunc("/", engine.checkAuth)
-	fmt.Printf("bridge service listening on: %s", engine.Port)
+	log.Printf("bridge service listening on: %s", engine.Port)
 	log.Fatal(http.ListenAndServe(engine.Port, nil))
 }
